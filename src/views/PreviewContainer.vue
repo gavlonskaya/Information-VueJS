@@ -1,18 +1,17 @@
 <template>
     <div class="preview">
-        <MainContainer>
+        <div class="container">
             <h1>Preview</h1>
-        </MainContainer>
+        </div>
 
     </div>
 </template>
 <script>
 
-import MainContainer from '@/components/MainContainer.vue';
 export default {
     name: 'PreviewContainer',
     components: {
-        MainContainer,
+
     },
 
 }

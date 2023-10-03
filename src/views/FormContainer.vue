@@ -2,34 +2,36 @@
     <div class="form">
         <div class="container-main">
             <div class="form__title">Персональные данные</div>
-            <form class="personal-info-form">
+            <form class="personal-info-form" @submit.prevent="saveData">
                 <div class="form-group">
                     <label for="name">Имя</label>
-                    <input type="text" id="name" v-model="name" @input="limitName" />
+                    <input type="text" id="name" v-model="name" @input="limitAdultName" />
                 </div>
                 <div class="form-group">
                     <label for="age">Возраст</label>
-                    <input type="text" id="age" v-model="age" @input="limitAge" />
+                    <input type="text" id="age" v-model="age" @input="limitAdultAge" />
                 </div>
-            </form>
-            <div class="form__title child">
-                <div class="child-title">Дети (макс. 5)</div>
-                <button class="add-child-button" @click="addChild">
-                    <img src="../assets/styles/plus.svg" />
-                    Добавить ребенка
-                </button>
-            </div>
-            <form class="personal-info-form">
-                <div v-for="(child, index) in children" :key="index">
-                    <div class="form-group child-form-group">
-                        <label :for="'childName' + index">Имя</label>
-                        <input :id="'childName' + index" v-model="child.name" @input="limitChildName(index)" />
-                    </div>
-                    <div class="form-group child-form-group">
-                        <label :for="'childAge' + index">Возраст</label>
-                        <input :id="'childAge' + index" v-model="child.age" @input="limitChildAge(index)" />
+                <div class="form__title child">
+                    <div class="child-title">Дети (макс. 5)</div>
+                    <button class="add-child-button" @click="addChild">
+                        <img src="../assets/styles/plus.svg" />
+                        Добавить ребенка
+                    </button>
+                </div>
+                <div v-if="showChildForm">
+                    <div v-for="(child, index) in children" :key="index">
+                        <div class="form-group child-form-group">
+                            <label :for="'childName' + index">Имя</label>
+                            <input :id="'childName' + index" v-model="child.name" @input="limitChildName(index)" />
+                        </div>
+                        <div class="form-group child-form-group">
+                            <label :for="'childAge' + index">Возраст</label>
+                            <input :id="'childAge' + index" v-model="child.age" @input="limitChildAge(index)" />
+                        </div>
+                        <button class="delete-child-button" @click="removeChild(child)">Удалить</button>
                     </div>
                 </div>
+                <button class="save-button" type="submit">Сохранить</button>
             </form>
         </div>
     </div>
@@ -42,21 +44,26 @@ export default {
         return {
             name: "",
             age: null,
-            children: [
-
-                {
-                    name: "",
-                    age: null,
-                },
-            ],
+            children: [],
+            showChildForm: false,
         };
     },
     methods: {
-        limitName() {
-            // ...
+        limitAdultName() {
+            this.name = this.name.replace(/[^A-Za-zА-Яа-яЁё]+/g, "");
         },
-        limitAge() {
-            // ...
+        limitAdultAge() {
+            this.age = this.age.replace(/\D/g, "");
+            this.age = this.age.replace(/^0+/, "");
+            if (this.age.length > 2) {
+                this.age = this.age.slice(0, 2);
+            }
+            const ageNumber = parseInt(this.age);
+            if (isNaN(ageNumber)) {
+                this.age = "";
+            } else if (ageNumber > 99) {
+                this.age = "99";
+            }
         },
         limitChildName(index) {
             this.children[index].name = this.children[index].name.replace(
@@ -79,14 +86,27 @@ export default {
         },
         addChild() {
             if (this.children.length < 5) {
-
                 this.children.push({
                     name: "",
                     age: null,
                 });
+                this.showChildForm = true; // Установите showChildForm в true
             }
         },
+        removeChild(childToRemove) {
+            const index = this.children.indexOf(childToRemove);
+            if (index !== -1) {
+                this.children.splice(index, 1);
+            }
+        }
+
     },
+
+    computed: {
+
+    },
+
+
 };
 </script>
   
@@ -145,6 +165,7 @@ export default {
             width: 260px;
             display: inline-block;
             margin-right: 18px;
+            vertical-align: middle;
 
         }
     }
@@ -177,11 +198,24 @@ export default {
 
     }
 
-    .add-child-button img {
-        margin-right: 8px;
+    .delete-child-button {
+        cursor: pointer;
+        border: none;
+        color: $btn-blue;
+        font-size: 14px;
+        background-color: $bg-form;
+    }
 
+    .save-button {
+        margin-top: 30px;
+        cursor: pointer;
+        border-radius: 100px;
+        border: none;
+        color: $bg-form;
+        font-size: 14px;
+        background-color: $btn-blue;
+        padding: 10px 20px;
     }
 
 }
 </style>
-  

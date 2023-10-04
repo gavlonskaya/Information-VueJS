@@ -10,7 +10,7 @@
           <FormContainer />
         </template>
         <template v-slot:preview>
-          <PreviewContainer />
+          <PreviewContainer :formData="formData" />
         </template>
 
       </router-view>
@@ -19,9 +19,6 @@
     <template v-slot:footer>
       <FooterContainer></FooterContainer>
     </template>
-
-
-
   </main-container>
 </template>
 
@@ -30,8 +27,7 @@ import FormContainer from './views/FormContainer.vue';
 import PreviewContainer from './views/PreviewContainer.vue';
 import HeaderContainer from './components/HeaderContainer.vue';
 import FooterContainer from './components/FooterContainer.vue';
-import MainContainer from './components/MainContainer.vue';
-
+import MainContainer from './components/MainContainer.vue'
 
 export default {
   components: {
@@ -39,15 +35,7 @@ export default {
     HeaderContainer,
     FooterContainer,
     FormContainer,
-    PreviewContainer
-  },
-  data() {
-    return {
-
-    };
-  },
-  methods: {
-
+    PreviewContainer,
   },
 };
 </script>

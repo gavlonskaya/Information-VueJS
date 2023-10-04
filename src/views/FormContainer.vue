@@ -13,7 +13,7 @@
                 </div>
                 <div class="form__title child">
                     <div class="child-title">Дети (макс. 5)</div>
-                    <button class="add-child-button" @click="addChild">
+                    <button class="add-child-button" @click="addChild" v-if="canAddChild">
                         <img src="../assets/styles/plus.svg" />
                         Добавить ребенка
                     </button>
@@ -33,7 +33,10 @@
                 </div>
                 <button class="save-button" type="submit">Сохранить</button>
             </form>
+
         </div>
+
+
     </div>
 </template>
 
@@ -46,9 +49,29 @@ export default {
             age: null,
             children: [],
             showChildForm: false,
+            childName: '',
+            childAge: null,
         };
     },
+    computed: {
+        canAddChild() {
+            return this.children.length < 5;
+        },
+        isDataValid() {
+
+            const isAdultDataValid = this.name && this.age !== null;
+
+
+            const isChildrenDataValid = this.children.every(child => child.name && child.age !== null);
+
+            return isAdultDataValid && isChildrenDataValid;
+        },
+    },
     methods: {
+        isAgeValid(age) {
+
+            return age !== null && age >= 0 && age <= 99;
+        },
         limitAdultName() {
             this.name = this.name.replace(/[^A-Za-zА-Яа-яЁё]+/g, "");
         },
@@ -90,132 +113,38 @@ export default {
                     name: "",
                     age: null,
                 });
-                this.showChildForm = true; // Установите showChildForm в true
+                this.showChildForm = true;
+                this.$store.dispatch('updateChildren', this.children);
             }
         },
         removeChild(childToRemove) {
             const index = this.children.indexOf(childToRemove);
             if (index !== -1) {
                 this.children.splice(index, 1);
+                this.$store.dispatch('updateChildren', this.children);
             }
-        }
+        },
 
+        saveData() {
+            if (!this.isDataValid) {
+
+                return;
+            }
+            const updatedData = {
+                name: this.name,
+                age: this.age,
+                children: this.children,
+            };
+
+            this.$store.dispatch('updateFormData', updatedData);
+            console.log("Данные сохранены:", updatedData);
+        },
     },
-
-    computed: {
-
-    },
-
 
 };
+
 </script>
   
 <style scoped lang="scss">
 @import '../assets/layouts/index.scss';
-
-
-.container-main {
-    padding: 30px 375px 136px;
-}
-
-.form {
-
-    &__title {
-        color: $primary;
-        font-size: 16px;
-        font-weight: 500;
-    }
-
-    .personal-info-form {
-        margin-top: 20px;
-
-
-        .form-group {
-            margin-bottom: 10px;
-            padding: 8px 16px 6px;
-            width: 616px;
-            height: 56px;
-            border-radius: 4px;
-            border: 1px solid ($border-form);
-            background: $bg-form;
-
-
-            label {
-                display: block;
-                color: $header;
-                font-size: 13px;
-            }
-
-            input {
-                color: $primary;
-                font-size: 14px;
-                border: none;
-                outline: none;
-            }
-
-            input[type="number"]::-webkit-inner-spin-button,
-            input[type="number"]::-webkit-outer-spin-button {
-                -webkit-appearance: none;
-                appearance: none;
-                margin: 0;
-            }
-        }
-
-        .child-form-group {
-            width: 260px;
-            display: inline-block;
-            margin-right: 18px;
-            vertical-align: middle;
-
-        }
-    }
-
-
-    .form__title.child {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 44px;
-        width: 616px;
-    }
-
-    .child-title {
-        color: $primary;
-        font-size: 16px;
-        font-weight: 500;
-    }
-
-    .add-child-button {
-        cursor: pointer;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        padding: 10px 20px;
-        border-radius: 100px;
-        border: 2px solid $btn-blue;
-        color: $btn-blue;
-        font-size: 14px;
-        background-color: $bg-form;
-        float: right;
-
-    }
-
-    .delete-child-button {
-        cursor: pointer;
-        border: none;
-        color: $btn-blue;
-        font-size: 14px;
-        background-color: $bg-form;
-    }
-
-    .save-button {
-        margin-top: 30px;
-        cursor: pointer;
-        border-radius: 100px;
-        border: none;
-        color: $bg-form;
-        font-size: 14px;
-        background-color: $btn-blue;
-        padding: 10px 20px;
-    }
-
-}
 </style>

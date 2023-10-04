@@ -2,11 +2,14 @@
     <div class="preview">
         <div class="container-main">
             <div class="preview__title">Персональные данные</div>
-            <div class="preview__data">, лет
+            <div class="preview__data">
+                {{ formData }}
             </div>
             <div class="preview__title">Дети</div>
             <div class="preview__data-child">
-                , лет
+                <div v-for="(child, index) in childrenData" :key="index" class="child-container">
+                    {{ child }}
+                </div>
             </div>
         </div>
     </div>
@@ -15,52 +18,29 @@
 <script>
 export default {
     name: "PreviewContainer",
-    data() {
-        return {
+    computed: {
+        formData() {
+            const formData = this.$store.getters.formData;
+            if (formData && formData.name && formData.age) {
+                return `${formData.name}, ${formData.age} лет`;
+            }
+            return null
+        },
 
-        };
+        childrenData() {
+            const formData = this.$store.getters.formData;
+            if (formData && formData.children) {
+                return formData.children.map(
+                    (child) => `${child.name}, ${child.age} лет`
+                );
+            }
+            return null
+        },
+
     },
-
-    methods: {
-
-    },
-}
+};
 </script>
 
-
-  
 <style scoped lang="scss">
 @import '../assets/layouts/index.scss';
-
-
-.container-main {
-    padding: 30px 375px 136px;
-}
-
-.preview {
-
-    &__title {
-        color: $primary;
-        font-size: 16px;
-        font-weight: 500;
-    }
-
-    &__data {
-        margin: 20px 0 60px;
-        color: $primary;
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    &__data-child {
-        margin: 20px 0 60px;
-        color: $primary;
-        font-size: 16px;
-        font-weight: 700;
-        padding: 10px 20px;
-        border-radius: 5px;
-        background: $border-form;
-        display: inline-block;
-    }
-}
 </style>
